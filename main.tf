@@ -1,7 +1,7 @@
 provider "aws"{ 
   region = "us-east-1"
-  access_key = "AKIAZ4WPQRJB2UNGAZM6"
-  secret_key = "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"
+  access_key = var.access.access
+  secret_key = var.access.secret
 }
 
 #creating vpc
@@ -48,57 +48,27 @@ resource "aws_route_table_association" "time" {
   subnet_id      = each.value.id
   route_table_id = aws_route_table.net-route.id
 }
-#resource
-resource "tls_private_key" "ssh" {
-  algorithm = "RSA"
-  rsa_bits = 4096
-}
-  
-#creating resoutce2
-resource "aws_key_pair" "deployer" {
-  key_name   = "kali"
-  public_key = tls_private_key.ssh.public_key_openssh
-}
-#resource3
-resource "local_file" "key" {
-  content = tls_private_key.ssh.private_key_pem
-  filename = "kali.pem"
-  file_permission = "400" 
-}
 
-#creating public EC2 instance
-resource "aws_instance" "pub" {
-  for_each = aws_subnet.cloud
-  ami              = "ami-00874d747dde814fa"
-  subnet_id        = each.value.id
-  instance_type    = "t2.micro"
-  key_name         = "kali"
-  security_groups  = [aws_security_group.allow.id]
-  associate_public_ip_address = true
-  
-  provisioner "local-exec" {
-  command = "echo ${self.public_ip} >> ./host-inventory"
-  } 
 
-} 
+ 
 resource "null_resource" "ansible" {
   provisioner "local-exec" {
-  command = "ansible-playbook --private-key kali.pem play.yml"
+  command = "ansible-playbook --private-key ubuntu.pem playbook.yml"
   }
 
-  depends_on = [aws_instance.pub]
+  depends_on = [aws_instance.ubuntu]
 }
 
 #creating hosted zone
 resource "aws_route53_zone" "route53" {
-  name = "cindychinma123.me"
+  name = "gerardokolie.me"
 }
 
-#creating route record
+#creating route record7
 resource "aws_route53_record" "record" {
   zone_id = aws_route53_zone.route53.id
-  name = "www.cindychinma123.com"
-  type = "A"
+  name = "www.gerardokolie.me"
+  type = "AAAA"
   alias {
   name = aws_lb.load.dns_name
   zone_id = aws_lb.load.zone_id  

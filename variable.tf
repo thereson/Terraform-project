@@ -14,3 +14,9 @@ type = string
 variable "targetgroup" {
 type = string
 }
+ variable "access" {
+type = object({
+secret = string 
+access = string
+})
+}

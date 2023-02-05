@@ -1,3 +1,7 @@
+access = {
+secret = ""
+access = ""
+}
 alt = "10.0.0.0/16"
 subnet = {
 first_subnet = {

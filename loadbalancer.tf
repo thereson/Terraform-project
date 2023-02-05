@@ -20,7 +20,7 @@ resource "aws_lb_target_group" "target" {
 }
 
 resource "aws_lb_target_group_attachment" "main" {
-  for_each = aws_instance.pub
+  for_each = aws_instance.ubuntu
   target_group_arn = aws_lb_target_group.target.arn
   target_id = each.value.id
 }
